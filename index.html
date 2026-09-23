@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONTROL SECURITY - Sistema de Control de Rondas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .shield-icon {
+            width: 70px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            border-radius: 10px 10px 30px 30px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 15px rgba(255, 183, 3, 0.4);
+        }
+        .shield-icon::after {
+            content: "🛡️";
+            font-size: 32px;
+        }
+        .badge-sspp {
+            background-color: #121826;
+            color: #ffb703;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            position: absolute;
+            bottom: -5px;
+            border: 1px solid #ffb703;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 24px;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        .official-tag {
+            background-color: #ffb703;
+            color: #0b0f19;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        .subtitle {
+            color: #8d99ae;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        .top-bar {
+            background-color: #121826;
+            border: 1px solid #1f293d;
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        .clock {
+            color: #ffb703;
+            font-weight: 650;
+        }
+        .shifts {
+            display: flex;
+            gap: 8px;
+        }
+        .shift-btn {
+            background: transparent;
+            border: 1px solid #2d3748;
+            color: #a0aec0;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .shift-btn.active {
+            background: linear-gradient(135deg, #ffb703, #fb8500);
+            color: #0b0f19;
+            border-color: transparent;
+            font-weight: bold;
+        }
+        .lock-banner {
+            background-color: #121826;
+            border: 1px solid #1f293d;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 11px;
+            color: #cbd5e0;
+        }
+        .lock-banner span {
+            color: #ffb703;
+            display: block;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+        .card {
+            background-color: #121826;
+            border: 1px solid #1f293d;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s;
+        }
+        .card:hover {
+            border-color: #ffb703;
+        }
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .badge-init {
+            background-color: #1e293b;
+            color: #94a3b8;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .badge-role {
+            background-color: rgba(255, 183, 3, 0.15);
+            color: #ffb703;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .card-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .card-rut {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+        .pin-protected {
+            color: #ffb703;
+        }
+        .fingerprint-btn {
+            background-color: #1a2234;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            width: 65px;
+            height: 65px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .fingerprint-btn:hover {
+            background-color: #253047;
+            border-color: #ffb703;
+        }
+        .fingerprint-icon {
+            font-size: 24px;
+        }
+        .fingerprint-text {
+            font-size: 8px;
+            color: #ffb703;
+            margin-top: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="shield-icon">
+                <div class="badge-sspp">SSPP</div>
+            </div>
+            <h1>CONTROL SECURITY <span class="official-tag">OFICIAL</span></h1>
+            <p class="subtitle">Sistema Operacional de Control de Rondas y Supervisión</p>
+        </header>
+
+        <div class="top-bar">
+            <div class="clock" id="live-clock">🕒 17:58:09 • Viernes, 28 de Agosto de 2026</div>
+            <div class="shifts">
+                <button class="shift-btn active" onclick="setShift(this)">☀️ Turno AM</button>
+                <button class="shift-btn" onclick="setShift(this)">🌙 Turno PM</button>
+            </div>
+        </div>
+
+        <div class="lock-banner">
+            <span>🔒 PANTALLA DE BLOQUEO • IDENTIFICACIÓN BIOMÉTRICA & PIN</span>
+            Toque la huella dactilar naranja de su usuario para ingresar su PIN de 4 dígitos
+        </div>
+
+        <!-- Usuario 1 -->
+        <div class="card">
+            <div class="card-info">
+                <div class="card-badges">
+                    <span class="badge-init">SGOMEZ</span>
+                    <span class="badge-role">Jefe Seguridad</span>
+                </div>
+                <div class="card-name">Sebastián Gómez A.</div>
+                <div class="card-rut">RUT: 13.784.602-9 • <span class="pin-protected">🔑 PIN Protegido</span></div>
+            </div>
+            <div class="fingerprint-btn" onclick="registrarAsistencia('Sebastián Gómez A.')">
+                <div class="fingerprint-icon">🟠</div>
+                <div class="fingerprint-text">Tocar Huella</div>
+            </div>
+        </div>
+
+        <!-- Usuario 2 -->
+        <div class="card">
+            <div class="card-info">
+                <div class="card-badges">
+                    <span class="badge-init">CHERNANDEZ</span>
+                    <span class="badge-role">SSPP</span>
+                </div>
+                <div class="card-name">Cristóbal Hernández</div>
+                <div class="card-rut">RUT: 15.420.198-4 • <span class="pin-protected">🔑 PIN Protegido</span></div>
+            </div>
+            <div class="fingerprint-btn" onclick="registrarAsistencia('Cristóbal Hernández')">
+                <div class="fingerprint-icon">🟠</div>
+                <div class="fingerprint-text">Tocar Huella</div>
+            </div>
+        </div>
+
+        <!-- Usuario 3 -->
+        <div class="card">
+            <div class="card-info">
+                <div class="card-badges">
+                    <span class="badge-init">CRODRIGUEZ</span>
+                    <span class="badge-role">SSPP</span>
+                </div>
+                <div class="card-name">Consuelo Rodríguez</div>
+                <div class="card-rut">RUT: 16.892.341-K • <span class="pin-protected">🔑 PIN Protegido</span></div>
+            </div>
+            <div class="fingerprint-btn" onclick="registrarAsistencia('Consuelo Rodríguez')">
+                <div class="fingerprint-icon">🟠</div>
+                <div class="fingerprint-text">Tocar Huella</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cambiar estilos de turnos
+        function setShift(button) {
+            document.querySelectorAll('.shift-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+
+        // Simular el registro de asistencia al tocar la huella
+        function registrarAsistencia(nombre) {
+            const pin = prompt(`[CONTROL SECURITY]\nIngrese PIN de 4 dígitos para ${nombre}:`);
+            if (pin && pin.length >= 4) {
+                alert(`¡Acceso verificado con éxito para ${nombre}!\nTurno registrado correctamente.`);
+            } else if (pin !== null) {
+                alert('PIN inválido. Intente nuevamente.');
+            }
+        }
+    </script>
+</body>
+</html>
