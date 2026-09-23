@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONTROL SECURITY - Sistema Operacional</title>
+    <!-- Librería para leer archivos de Excel (.xlsx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -28,40 +30,26 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .shield-icon {
-            width: 60px;
-            height: 70px;
-            background: linear-gradient(135deg, #ffb703, #fb8500);
-            border-radius: 10px 10px 25px 25px;
-            margin: 0 auto 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 0 15px rgba(255, 183, 3, 0.4);
+        
+        /* Contenedor del Logotipo Real */
+        .logo-container {
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 10px;
+            filter: drop-shadow(0 0 10px rgba(255, 126, 0, 0.4));
         }
-        .shield-icon::after {
-            content: "🛡️";
-            font-size: 28px;
+        .logo-container svg {
+            width: 100%;
+            height: 100%;
         }
-        .badge-sspp {
-            background-color: #121826;
-            color: #ffb703;
-            font-size: 9px;
-            padding: 2px 5px;
-            border-radius: 4px;
-            position: absolute;
-            bottom: -4px;
-            border: 1px solid #ffb703;
-            font-weight: bold;
-        }
+
         h1 {
             font-size: 22px;
             letter-spacing: 1px;
             font-weight: 800;
         }
         .official-tag {
-            background-color: #ffb703;
+            background-color: #ff7e00;
             color: #0b0f19;
             font-size: 9px;
             padding: 2px 6px;
@@ -97,7 +85,7 @@
             transition: all 0.2s;
         }
         .nav-tab.active {
-            background-color: #ffb703;
+            background-color: #ff7e00;
             color: #0b0f19;
         }
 
@@ -120,7 +108,7 @@
             font-size: 12px;
         }
         .clock {
-            color: #ffb703;
+            color: #ff7e00;
             font-weight: 650;
         }
         .shifts {
@@ -137,7 +125,7 @@
             font-size: 10px;
         }
         .shift-btn.active {
-            background: linear-gradient(135deg, #ffb703, #fb8500);
+            background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
             border-color: transparent;
             font-weight: bold;
@@ -154,7 +142,7 @@
             color: #cbd5e0;
         }
         .lock-banner span {
-            color: #ffb703;
+            color: #ff7e00;
             display: block;
             margin-bottom: 2px;
             font-weight: bold;
@@ -189,14 +177,6 @@
             border-radius: 4px;
             font-weight: bold;
         }
-        .badge-role {
-            background-color: rgba(255, 183, 3, 0.15);
-            color: #ffb703;
-            font-size: 9px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
         .badge-install {
             background-color: #1e3a8a;
             color: #93c5fd;
@@ -219,7 +199,7 @@
             margin-top: 2px;
         }
         .pin-protected {
-            color: #ffb703;
+            color: #ff7e00;
         }
         .fingerprint-btn {
             background-color: #1a2234;
@@ -238,7 +218,7 @@
         }
         .fingerprint-text {
             font-size: 7px;
-            color: #ffb703;
+            color: #ff7e00;
             margin-top: 1px;
             font-weight: bold;
         }
@@ -252,7 +232,7 @@
         }
         .admin-form h3 {
             font-size: 14px;
-            color: #ffb703;
+            color: #ff7e00;
             margin-bottom: 10px;
         }
         .form-group {
@@ -274,7 +254,7 @@
             font-size: 12px;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #ffb703, #fb8500);
+            background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
             border: none;
             border-radius: 6px;
@@ -283,18 +263,6 @@
             font-size: 12px;
             cursor: pointer;
             width: 100%;
-        }
-        .btn-secondary {
-            background-color: #1e293b;
-            color: #ffb703;
-            border: 1px solid #ffb703;
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 8px;
         }
         .btn-delete {
             background-color: #ef4444;
@@ -321,8 +289,26 @@
 
     <div class="container">
         <header>
-            <div class="shield-icon">
-                <div class="badge-sspp">SSPP</div>
+            <!-- LOGOTIPO CORPORATIVO EXACTO (Vectorial sin fondo blanco) -->
+            <div class="logo-container">
+                <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Círculo Exterior Naranja -->
+                    <circle cx="250" cy="250" r="235" fill="none" stroke="#ff7e00" stroke-width="24"/>
+                    <!-- Fondo Negro Interno -->
+                    <circle cx="250" cy="250" r="220" fill="#050505"/>
+                    <!-- Contorno del Escudo Naranja -->
+                    <path d="M 250 85 C 340 95, 395 105, 395 105 L 395 280 C 395 365, 310 415, 250 435 C 190 415, 105 365, 105 280 L 105 105 C 105 105, 160 95, 250 85 Z" fill="none" stroke="#ff7e00" stroke-width="14" stroke-linejoin="round"/>
+                    <!-- Huella Dactilar Naranja -->
+                    <g fill="none" stroke="#ff7e00" stroke-width="12" stroke-linecap="round">
+                        <path d="M 250 145 C 295 145, 335 175, 335 220 C 335 250, 315 285, 290 310"/>
+                        <path d="M 250 165 C 285 165, 315 190, 315 225 C 315 260, 290 295, 270 320"/>
+                        <path d="M 250 185 C 270 185, 295 205, 295 235 C 295 265, 275 295, 255 315"/>
+                        <path d="M 250 205 C 260 205, 275 220, 275 240 C 275 260, 260 280, 245 295"/>
+                        <path d="M 210 160 C 180 175, 165 210, 165 245 C 165 300, 210 345, 235 365"/>
+                        <path d="M 190 190 C 175 210, 175 240, 185 270 C 195 300, 220 330, 235 345"/>
+                        <path d="M 210 220 C 200 235, 200 255, 210 275 C 220 295, 235 315, 245 325"/>
+                    </g>
+                </svg>
             </div>
             <h1>CONTROL SECURITY <span class="official-tag">OFICIAL</span></h1>
             <p class="subtitle">Sistema Operacional de Control de Rondas y Supervisión</p>
@@ -354,18 +340,16 @@
         <!-- VISTA 2: ADMINISTRACIÓN & CARGA MASIVA -->
         <div id="view-admin" class="view-section">
             
-            <!-- Bloque de Carga Masiva Excel/CSV -->
-            <div class="admin-form" style="border: 2px dashed #ffb703;">
-                <h3>📂 Carga Masiva desde Excel (CSV)</h3>
+            <div class="admin-form" style="border: 2px dashed #ff7e00;">
+                <h3>📂 Carga Masiva desde Excel (.xlsx)</h3>
                 <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">
-                    Sube un archivo CSV con las columnas: <b>AP PATERNO, AP MATERNO, NOMBRES, RUT, TIPO CTTO, INSTALACION, PAUTA, TURNO</b>.
+                    Sube tu archivo de Excel con las columnas ordenadas así:<br>
+                    <b>A: AP PATERNO | B: AP MATERNO | C: NOMBRES | D: RUT | E: TIPO CTTO | F: INSTALACION | G: PAUTA | H: TURNO</b>
                 </p>
-                <input type="file" id="csv-file-input" accept=".csv" class="form-control" style="margin-bottom: 8px;">
-                <button class="btn-primary" onclick="procesarArchivoCSV()">Importar Datos Masivos</button>
-                <button class="btn-secondary" onclick="descargarPlantillaCSV()">📥 Descargar Plantilla de Ejemplo</button>
+                <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="form-control" style="margin-bottom: 8px;">
+                <button class="btn-primary" onclick="procesarArchivoExcel()">Importar desde Excel</button>
             </div>
 
-            <!-- Ingreso Individual -->
             <div class="admin-form">
                 <h3>➕ Agregar Funcionario Individual</h3>
                 <div class="form-group">
@@ -522,22 +506,10 @@
             }
         }
 
-        // Descargar plantilla CSV de ejemplo
-        function descargarPlantillaCSV() {
-            const csvContenido = "AP PATERNO,AP MATERNO,NOMBRES,RUT,TIPO CTTO,INSTALACION,PAUTA,TURNO\nGómez,Aravena,Sebastián,13.784.602-9,Indefinido,Central Principal,Pauta A,Turno AM\nHernández,Soto,Cristóbal,15.420.198-4,Plazo Fijo,Sector Bodegas,Pauta B,Turno AM";
-            const blob = new Blob([csvContenido], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "Plantilla_Control_Security.csv";
-            a.click();
-        }
-
-        // Procesar archivo CSV subido
-        function procesarArchivoCSV() {
-            const fileInput = document.getElementById('csv-file-input');
+        function procesarArchivoExcel() {
+            const fileInput = document.getElementById('excel-file-input');
             if (fileInput.files.length === 0) {
-                alert('Por favor, seleccione un archivo CSV primero.');
+                alert('Por favor, seleccione un archivo de Excel (.xlsx) primero.');
                 return;
             }
 
@@ -545,26 +517,28 @@
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                const texto = e.target.result;
-                const lineas = texto.split('\n');
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
                 let agregados = 0;
 
-                // Empezar desde i=1 para saltar la cabecera
-                for (let i = 1; i < lineas.length; i++) {
-                    const linea = lineas[i].trim();
-                    if (!linea) continue;
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0) continue;
 
-                    const columnas = linea.split(',');
-                    if (columnas.length >= 4) {
-                        const apPaterno = columnas[0] ? columnas[0].trim() : '';
-                        const apMaterno = columnas[1] ? columnas[1].trim() : '';
-                        const nombres = columnas[2] ? columnas[2].trim() : '';
-                        const rut = columnas[3] ? columnas[3].trim() : '';
-                        const tipoCtto = columnas[4] ? columnas[4].trim() : 'Indefinido';
-                        const instalacion = columnas[5] ? columnas[5].trim() : 'Principal';
-                        const pauta = columnas[6] ? columnas[6].trim() : 'Estándar';
-                        const turno = columnas[7] ? columnas[7].trim() : 'Turno AM';
+                    const apPaterno = row[0] ? String(row[0]).trim() : '';
+                    const apMaterno = row[1] ? String(row[1]).trim() : '';
+                    const nombres = row[2] ? String(row[2]).trim() : '';
+                    const rut = row[3] ? String(row[3]).trim() : '';
+                    const tipoCtto = row[4] ? String(row[4]).trim() : 'Indefinido';
+                    const instalacion = row[5] ? String(row[5]).trim() : 'Principal';
+                    const pauta = row[6] ? String(row[6]).trim() : 'Estándar';
+                    const turno = row[7] ? String(row[7]).trim() : 'Turno AM';
 
+                    if (nombres && rut) {
                         const nombreCompleto = `${nombres} ${apPaterno} ${apMaterno}`.trim();
                         const init = (apPaterno ? apPaterno[0] : '') + (nombres ? nombres.split(' ')[0] : '');
 
@@ -584,10 +558,10 @@
 
                 guardarEnMemoria();
                 renderizarPanelAdmin();
-                alert(`¡Carga masiva exitosa! Se han importado ${agregados} funcionarios correctamente.`);
+                alert(`¡Importación exitosa! Se han cargado ${agregados} funcionarios.`);
             };
 
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
 
         function registrarAsistencia(nombre) {
