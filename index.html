@@ -22,7 +22,7 @@
         }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
         }
         header {
             text-align: center;
@@ -76,7 +76,6 @@
             margin-top: 4px;
         }
         
-        /* Navegación de Vistas */
         .nav-tabs {
             display: flex;
             background-color: #121826;
@@ -180,6 +179,7 @@
             display: flex;
             gap: 6px;
             align-items: center;
+            flex-wrap: wrap;
         }
         .badge-init {
             background-color: #1e293b;
@@ -197,6 +197,14 @@
             border-radius: 4px;
             font-weight: 600;
         }
+        .badge-install {
+            background-color: #1e3a8a;
+            color: #93c5fd;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
         .card-name {
             font-size: 15px;
             font-weight: bold;
@@ -204,6 +212,11 @@
         .card-rut {
             font-size: 11px;
             color: #94a3b8;
+        }
+        .card-details {
+            font-size: 10px;
+            color: #cbd5e0;
+            margin-top: 2px;
         }
         .pin-protected {
             color: #ffb703;
@@ -230,7 +243,6 @@
             font-weight: bold;
         }
 
-        /* Estilos del panel de administración */
         .admin-form {
             background-color: #121826;
             border: 1px solid #1f293d;
@@ -272,6 +284,18 @@
             cursor: pointer;
             width: 100%;
         }
+        .btn-secondary {
+            background-color: #1e293b;
+            color: #ffb703;
+            border: 1px solid #ffb703;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
         .btn-delete {
             background-color: #ef4444;
             color: white;
@@ -289,7 +313,7 @@
             padding: 8px 10px;
             border-radius: 6px;
             margin-bottom: 6px;
-            font-size: 12px;
+            font-size: 11px;
         }
     </style>
 </head>
@@ -304,7 +328,6 @@
             <p class="subtitle">Sistema Operacional de Control de Rondas y Supervisión</p>
         </header>
 
-        <!-- Barra de Pestañas para cambiar entre Operación y Configuración -->
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchView('control')">📋 Control de Asistencia</button>
             <button class="nav-tab" onclick="switchView('admin')">⚙️ Configurar Personal</button>
@@ -325,45 +348,57 @@
                 Toque la huella dactilar para registrar asistencia
             </div>
 
-            <div id="personal-list-container">
-                <!-- Se cargará dinámicamente desde JavaScript -->
-            </div>
+            <div id="personal-list-container"></div>
         </div>
 
-        <!-- VISTA 2: ADMINISTRACIÓN / CONFIGURACIÓN -->
+        <!-- VISTA 2: ADMINISTRACIÓN & CARGA MASIVA -->
         <div id="view-admin" class="view-section">
+            
+            <!-- Bloque de Carga Masiva Excel/CSV -->
+            <div class="admin-form" style="border: 2px dashed #ffb703;">
+                <h3>📂 Carga Masiva desde Excel (CSV)</h3>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">
+                    Sube un archivo CSV con las columnas: <b>AP PATERNO, AP MATERNO, NOMBRES, RUT, TIPO CTTO, INSTALACION, PAUTA, TURNO</b>.
+                </p>
+                <input type="file" id="csv-file-input" accept=".csv" class="form-control" style="margin-bottom: 8px;">
+                <button class="btn-primary" onclick="procesarArchivoCSV()">Importar Datos Masivos</button>
+                <button class="btn-secondary" onclick="descargarPlantillaCSV()">📥 Descargar Plantilla de Ejemplo</button>
+            </div>
+
+            <!-- Ingreso Individual -->
             <div class="admin-form">
-                <h3>➕ Agregar Nuevo Funcionario / Guardia</h3>
+                <h3>➕ Agregar Funcionario Individual</h3>
                 <div class="form-group">
-                    <label>Nombre Completo</label>
-                    <input type="text" id="input-nombre" class="form-control" placeholder="Ej: Juan Pérez">
+                    <label>Nombres y Apellidos</label>
+                    <input type="text" id="input-nombre" class="form-control" placeholder="Ej: Juan Pérez Soto">
                 </div>
                 <div class="form-group">
                     <label>RUT</label>
                     <input type="text" id="input-rut" class="form-control" placeholder="Ej: 12.345.678-9">
                 </div>
                 <div class="form-group">
-                    <label>Cargo / Rol</label>
-                    <select id="input-cargo" class="form-control">
-                        <option value="Jefe Seguridad">Jefe Seguridad</option>
-                        <option value="SSPP">SSPP (Supervisor/Guardia)</option>
-                        <option value="Guardia de Ronda">Guardia de Ronda</option>
+                    <label>Instalación</label>
+                    <input type="text" id="input-instalacion" class="form-control" placeholder="Ej: Planta Norte">
+                </div>
+                <div class="form-group">
+                    <label>Pauta / Turno</label>
+                    <select id="input-turno" class="form-control">
+                        <option value="Turno AM">Turno AM</option>
+                        <option value="Turno PM">Turno PM</option>
+                        <option value="Turno Noche">Turno Noche</option>
                     </select>
                 </div>
-                <button class="btn-primary" onclick="agregarPersona()">Guardar Funcionario</button>
+                <button class="btn-primary" onclick="agregarPersonaIndividual()">Guardar Funcionario</button>
             </div>
 
             <div class="admin-form">
-                <h3>👥 Personal Registrado actualmente</h3>
-                <div id="admin-personal-list">
-                    <!-- Listado para administrar -->
-                </div>
+                <h3>👥 Personal Registrado (<span id="total-personal">0</span>)</h3>
+                <div id="admin-personal-list"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Reloj en tiempo real
         function actualizarReloj() {
             const ahora = new Date();
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -374,18 +409,16 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
-        // Datos iniciales por defecto (si no hay nada guardado)
         let personal = JSON.parse(localStorage.getItem('cs_personal')) || [
-            { id: 1, nombre: 'Sebastián Gómez A.', rut: '13.784.602-9', cargo: 'Jefe Seguridad', init: 'SGOMEZ' },
-            { id: 2, nombre: 'Cristóbal Hernández', rut: '15.420.198-4', cargo: 'SSPP', init: 'CHERNANDEZ' },
-            { id: 3, nombre: 'Consuelo Rodríguez', rut: '16.892.341-K', cargo: 'CRODRIGUEZ' }
+            { id: 1, nombre: 'Sebastián Gómez A.', rut: '13.784.602-9', cargo: 'Jefe Seguridad', instalacion: 'Central Principal', pauta: 'Pauta A', turno: 'Turno AM', init: 'SGOMEZ' },
+            { id: 2, nombre: 'Cristóbal Hernández', rut: '15.420.198-4', cargo: 'SSPP', instalacion: 'Sector Bodegas', pauta: 'Pauta B', turno: 'Turno AM', init: 'CHERNANDEZ' },
+            { id: 3, nombre: 'Consuelo Rodríguez', rut: '16.892.341-K', cargo: 'SSPP', instalacion: 'Acceso Principal', pauta: 'Pauta A', turno: 'Turno PM', init: 'CRODRIGUEZ' }
         ];
 
         function guardarEnMemoria() {
             localStorage.setItem('cs_personal', JSON.stringify(personal));
         }
 
-        // Cambiar entre pestañas
         function switchView(viewName) {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
@@ -401,13 +434,12 @@
             }
         }
 
-        // Renderizar lista en la pantalla principal
         function renderizarPantallaControl() {
             const contenedor = document.getElementById('personal-list-container');
             contenedor.innerHTML = '';
 
             if (personal.length === 0) {
-                contenedor.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:12px; padding:20px;">No hay personal registrado. Vaya a "Configurar Personal" para agregar.</p>';
+                contenedor.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:12px; padding:20px;">No hay personal registrado.</p>';
                 return;
             }
 
@@ -418,10 +450,11 @@
                     <div class="card-info">
                         <div class="card-badges">
                             <span class="badge-init">${p.init}</span>
-                            <span class="badge-role">${p.cargo}</span>
+                            <span class="badge-install">📍 ${p.instalacion || 'Sin Instalación'}</span>
                         </div>
                         <div class="card-name">${p.nombre}</div>
-                        <div class="card-rut">RUT: ${p.rut} • <span class="pin-protected">🔑 PIN Protegido</span></div>
+                        <div class="card-rut">RUT: ${p.rut} • <span class="pin-protected">🔑 PIN</span></div>
+                        <div class="card-details">Pauta: ${p.pauta || 'N/A'} | Turno: ${p.turno || 'AM'}</div>
                     </div>
                     <div class="fingerprint-btn" onclick="registrarAsistencia('${p.nombre}')">
                         <div class="fingerprint-icon">🟠</div>
@@ -432,9 +465,9 @@
             });
         }
 
-        // Renderizar lista en el panel de administración
         function renderizarPanelAdmin() {
             const contenedor = document.getElementById('admin-personal-list');
+            document.getElementById('total-personal').innerText = personal.length;
             contenedor.innerHTML = '';
 
             if (personal.length === 0) {
@@ -447,8 +480,8 @@
                 item.className = 'admin-list-item';
                 item.innerHTML = `
                     <div>
-                        <strong>${p.nombre}</strong> (${p.cargo})<br>
-                        <span style="color:#94a3b8; font-size:10px;">RUT: ${p.rut}</span>
+                        <strong>${p.nombre}</strong><br>
+                        <span style="color:#94a3b8; font-size:10px;">RUT: ${p.rut} | 📍 ${p.instalacion} (${p.turno})</span>
                     </div>
                     <button class="btn-delete" onclick="eliminarPersona(${index})">Eliminar</button>
                 `;
@@ -456,33 +489,31 @@
             });
         }
 
-        // Agregar persona
-        function agregarPersona() {
+        function agregarPersonaIndividual() {
             const nombre = document.getElementById('input-nombre').value.trim();
             const rut = document.getElementById('input-rut').value.trim();
-            const cargo = document.getElementById('input-cargo').value;
+            const instalacion = document.getElementById('input-instalacion').value.trim() || 'General';
+            const turno = document.getElementById('input-turno').value;
 
             if (!nombre || !rut) {
-                alert('Por favor, complete el nombre y el RUT.');
+                alert('Por favor, complete al menos el nombre y el RUT.');
                 return;
             }
 
-            // Generar iniciales automáticas (Ej: Juan Perez -> JPEREZ)
             const partes = nombre.toUpperCase().split(' ');
             const init = partes.length > 1 ? partes[0][0] + partes[1] : partes[0];
 
-            personal.push({ id: Date.now(), nombre, rut, cargo, init });
+            personal.push({ id: Date.now(), nombre, rut, cargo: 'Guardia/SSPP', instalacion, pauta: 'Estándar', turno, init });
             guardarEnMemoria();
 
-            // Limpiar inputs
             document.getElementById('input-nombre').value = '';
             document.getElementById('input-rut').value = '';
+            document.getElementById('input-instalacion').value = '';
 
             alert('¡Funcionario agregado con éxito!');
             renderizarPanelAdmin();
         }
 
-        // Eliminar persona
         function eliminarPersona(index) {
             if (confirm('¿Está seguro de eliminar a este funcionario?')) {
                 personal.splice(index, 1);
@@ -491,7 +522,74 @@
             }
         }
 
-        // Simular registro de asistencia
+        // Descargar plantilla CSV de ejemplo
+        function descargarPlantillaCSV() {
+            const csvContenido = "AP PATERNO,AP MATERNO,NOMBRES,RUT,TIPO CTTO,INSTALACION,PAUTA,TURNO\nGómez,Aravena,Sebastián,13.784.602-9,Indefinido,Central Principal,Pauta A,Turno AM\nHernández,Soto,Cristóbal,15.420.198-4,Plazo Fijo,Sector Bodegas,Pauta B,Turno AM";
+            const blob = new Blob([csvContenido], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Plantilla_Control_Security.csv";
+            a.click();
+        }
+
+        // Procesar archivo CSV subido
+        function procesarArchivoCSV() {
+            const fileInput = document.getElementById('csv-file-input');
+            if (fileInput.files.length === 0) {
+                alert('Por favor, seleccione un archivo CSV primero.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const texto = e.target.result;
+                const lineas = texto.split('\n');
+                let agregados = 0;
+
+                // Empezar desde i=1 para saltar la cabecera
+                for (let i = 1; i < lineas.length; i++) {
+                    const linea = lineas[i].trim();
+                    if (!linea) continue;
+
+                    const columnas = linea.split(',');
+                    if (columnas.length >= 4) {
+                        const apPaterno = columnas[0] ? columnas[0].trim() : '';
+                        const apMaterno = columnas[1] ? columnas[1].trim() : '';
+                        const nombres = columnas[2] ? columnas[2].trim() : '';
+                        const rut = columnas[3] ? columnas[3].trim() : '';
+                        const tipoCtto = columnas[4] ? columnas[4].trim() : 'Indefinido';
+                        const instalacion = columnas[5] ? columnas[5].trim() : 'Principal';
+                        const pauta = columnas[6] ? columnas[6].trim() : 'Estándar';
+                        const turno = columnas[7] ? columnas[7].trim() : 'Turno AM';
+
+                        const nombreCompleto = `${nombres} ${apPaterno} ${apMaterno}`.trim();
+                        const init = (apPaterno ? apPaterno[0] : '') + (nombres ? nombres.split(' ')[0] : '');
+
+                        personal.push({
+                            id: Date.now() + i,
+                            nombre: nombreCompleto,
+                            rut: rut,
+                            cargo: tipoCtto,
+                            instalacion: instalacion,
+                            pauta: pauta,
+                            turno: turno,
+                            init: init.toUpperCase()
+                        });
+                        agregados++;
+                    }
+                }
+
+                guardarEnMemoria();
+                renderizarPanelAdmin();
+                alert(`¡Carga masiva exitosa! Se han importado ${agregados} funcionarios correctamente.`);
+            };
+
+            reader.readAsText(file);
+        }
+
         function registrarAsistencia(nombre) {
             const pin = prompt(`[CONTROL SECURITY]\nIngrese PIN de 4 dígitos para ${nombre}:`);
             if (pin && pin.length >= 4) {
@@ -501,7 +599,6 @@
             }
         }
 
-        // Inicializar vista de control al cargar
         renderizarPantallaControl();
 
         function setShift(button) {
