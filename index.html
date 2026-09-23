@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONTROL SECURITY - Sistema Operacional</title>
-    <!-- Librería para leer archivos de Excel (.xlsx) -->
+    <title>CONTROL SECURITY - Control de Asistencia</title>
+    <!-- Librería para leer y escribir archivos de Excel (.xlsx) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
         }
         body {
             background-color: #0b0f19;
             color: #ffffff;
-            padding: 20px;
+            padding: 20px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -24,19 +24,23 @@
         }
         .container {
             width: 100%;
-            max-width: 650px;
+            max-width: 720px;
         }
         header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
-        /* Contenedor del Logotipo Real */
+        /* Contenedor del Logotipo Corporativo */
         .logo-container {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 10px;
-            filter: drop-shadow(0 0 12px rgba(255, 126, 0, 0.5));
+            width: 96px;
+            height: 96px;
+            margin: 0 auto 12px;
+            filter: drop-shadow(0 0 16px rgba(255, 126, 0, 0.55));
+            transition: transform 0.3s ease;
+        }
+        .logo-container:hover {
+            transform: scale(1.04);
         }
         .logo-container svg {
             width: 100%;
@@ -44,49 +48,60 @@
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 24px;
             letter-spacing: 1px;
             font-weight: 800;
+            color: #ffffff;
         }
         .official-tag {
-            background-color: #ff7e00;
+            background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
-            font-size: 9px;
-            padding: 2px 6px;
+            font-size: 10px;
+            padding: 2px 8px;
             border-radius: 4px;
-            font-weight: bold;
-            margin-left: 5px;
+            font-weight: 800;
+            margin-left: 6px;
             vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .subtitle {
-            color: #8d99ae;
-            font-size: 11px;
+            color: #94a3b8;
+            font-size: 12px;
             margin-top: 4px;
         }
         
+        /* Navegación por pestañas */
         .nav-tabs {
             display: flex;
             background-color: #121826;
             border: 1px solid #1f293d;
-            border-radius: 10px;
-            padding: 4px;
+            border-radius: 12px;
+            padding: 5px;
             margin-bottom: 20px;
+            gap: 5px;
         }
         .nav-tab {
             flex: 1;
             background: transparent;
             border: none;
             color: #94a3b8;
-            padding: 8px;
+            padding: 10px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 12px;
-            transition: all 0.2s;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
         .nav-tab.active {
-            background-color: #ff7e00;
+            background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(255, 126, 0, 0.25);
         }
 
         .view-section {
@@ -96,72 +111,113 @@
             display: block;
         }
 
+        /* Barra Superior / Reloj y Filtros */
         .top-bar {
             background-color: #121826;
             border: 1px solid #1f293d;
             border-radius: 12px;
-            padding: 12px 15px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .top-bar-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            font-size: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .clock {
             color: #ff7e00;
-            font-weight: 650;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .shifts {
             display: flex;
             gap: 6px;
+            flex-wrap: wrap;
         }
         .shift-btn {
-            background: transparent;
+            background: #1a2234;
             border: 1px solid #2d3748;
             color: #a0aec0;
-            padding: 4px 8px;
+            padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
         .shift-btn.active {
             background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
             border-color: transparent;
-            font-weight: bold;
+            font-weight: 700;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+        .search-input {
+            width: 100%;
+            background-color: #0b0f19;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 9px 12px;
+            color: #ffffff;
+            font-size: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            border-color: #ff7e00;
         }
 
         .lock-banner {
             background-color: #121826;
             border: 1px solid #1f293d;
+            border-left: 4px solid #ff7e00;
             border-radius: 10px;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
-            margin-bottom: 15px;
-            font-size: 11px;
+            margin-bottom: 16px;
+            font-size: 12px;
             color: #cbd5e0;
         }
         .lock-banner span {
             color: #ff7e00;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
+        /* Tarjeta de Personal */
         .card {
             background-color: #121826;
             border: 1px solid #1f293d;
             border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 10px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        .card:hover {
+            border-color: #2e3d5a;
         }
         .card-info {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
+            flex: 1;
         }
         .card-badges {
             display: flex;
@@ -171,117 +227,268 @@
         }
         .badge-init {
             background-color: #1e293b;
-            color: #94a3b8;
-            font-size: 9px;
-            padding: 2px 5px;
+            color: #ff7e00;
+            font-size: 10px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-weight: bold;
+            font-weight: 700;
+            border: 1px solid rgba(255, 126, 0, 0.2);
         }
         .badge-install {
             background-color: #1e3a8a;
             color: #93c5fd;
-            font-size: 9px;
-            padding: 2px 6px;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .badge-shift {
+            background-color: #1a2234;
+            color: #cbd5e0;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            border: 1px solid #2d3748;
+        }
+        .badge-status-present {
+            background-color: #064e3b;
+            color: #34d399;
+            font-size: 10px;
+            padding: 2px 7px;
             border-radius: 4px;
             font-weight: 600;
         }
         .card-name {
             font-size: 15px;
-            font-weight: bold;
+            font-weight: 700;
+            color: #f8fafc;
         }
         .card-rut {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
         }
         .card-details {
-            font-size: 10px;
+            font-size: 11px;
             color: #cbd5e0;
-            margin-top: 2px;
         }
         .pin-protected {
             color: #ff7e00;
+            font-weight: 600;
         }
         .fingerprint-btn {
             background-color: #1a2234;
-            border: 1px solid #2d3748;
-            border-radius: 10px;
-            width: 55px;
-            height: 55px;
+            border: 1px solid #ff7e00;
+            border-radius: 12px;
+            width: 62px;
+            height: 62px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .fingerprint-btn:hover {
+            background-color: #ff7e00;
+            box-shadow: 0 0 14px rgba(255, 126, 0, 0.5);
+        }
+        .fingerprint-btn:hover .fingerprint-icon,
+        .fingerprint-btn:hover .fingerprint-text {
+            color: #0b0f19;
         }
         .fingerprint-icon {
-            font-size: 20px;
+            font-size: 22px;
+            line-height: 1;
         }
         .fingerprint-text {
-            font-size: 7px;
+            font-size: 8px;
             color: #ff7e00;
-            margin-top: 1px;
-            font-weight: bold;
+            margin-top: 3px;
+            font-weight: 800;
+            text-transform: uppercase;
         }
 
+        /* Formularios y Secciones de Admin */
         .admin-form {
             background-color: #121826;
             border: 1px solid #1f293d;
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
         }
         .admin-form h3 {
-            font-size: 14px;
+            font-size: 15px;
             color: #ff7e00;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .form-group label {
             display: block;
             font-size: 11px;
             color: #94a3b8;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
         .form-control {
             width: 100%;
             background-color: #0b0f19;
             border: 1px solid #2d3748;
-            border-radius: 6px;
-            padding: 8px;
+            border-radius: 8px;
+            padding: 9px 12px;
             color: #ffffff;
             font-size: 12px;
+            outline: none;
+        }
+        .form-control:focus {
+            border-color: #ff7e00;
         }
         .btn-primary {
             background: linear-gradient(135deg, #ff7e00, #ff5500);
             color: #0b0f19;
             border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-weight: bold;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-weight: 700;
             font-size: 12px;
             cursor: pointer;
             width: 100%;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn-primary:hover {
+            opacity: 0.92;
+        }
+        .btn-secondary {
+            background-color: #1a2234;
+            color: #ff7e00;
+            border: 1px solid #ff7e00;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #ff7e00;
+            color: #0b0f19;
         }
         .btn-delete {
             background-color: #ef4444;
             color: white;
             border: none;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 10px;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
             cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #dc2626;
         }
         .admin-list-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: #1a2234;
-            padding: 8px 10px;
-            border-radius: 6px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            border: 1px solid #2d3748;
+        }
+
+        /* Modal para PIN */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-box {
+            background-color: #121826;
+            border: 1px solid #ff7e00;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 126, 0, 0.2);
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 6px;
+        }
+        .modal-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+        .modal-pin-input {
+            width: 100%;
+            background-color: #0b0f19;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 12px;
+            color: #ff7e00;
+            font-size: 20px;
+            text-align: center;
+            letter-spacing: 8px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        .modal-pin-input:focus {
+            border-color: #ff7e00;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Tabla de Asistencias */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 11px;
+            text-align: left;
+        }
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #1f293d;
+        }
+        th {
+            color: #ff7e00;
+            font-weight: 700;
+            background-color: #1a2234;
+        }
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02);
         }
     </style>
 </head>
@@ -289,7 +496,7 @@
 
     <div class="container">
         <header>
-            <!-- LOGOTIPO CORPORATIVO REAL -->
+            <!-- LOGOTIPO CORPORATIVO REAL (HUELLA EN ESCUDO) -->
             <div class="logo-container">
                 <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="250" cy="250" r="235" fill="none" stroke="#ff7e00" stroke-width="24"/>
@@ -307,27 +514,34 @@
                 </svg>
             </div>
             <h1>CONTROL SECURITY <span class="official-tag">OFICIAL</span></h1>
-            <p class="subtitle">Sistema Operacional de Control de Rondas y Supervisión</p>
+            <p class="subtitle">Sistema Operacional de Control de Asistencia y Rondas</p>
         </header>
 
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="switchView('control')">📋 Control de Asistencia</button>
-            <button class="nav-tab" onclick="switchView('admin')">⚙️ Configurar Personal</button>
+            <button class="nav-tab" onclick="switchView('admin')">⚙️ Panel de Administración</button>
         </div>
 
         <!-- VISTA 1: CONTROL DE ASISTENCIA -->
         <div id="view-control" class="view-section active">
             <div class="top-bar">
-                <div class="clock" id="live-clock">🕒 Cargando hora...</div>
-                <div class="shifts">
-                    <button class="shift-btn active" onclick="setShift(this)">☀️ AM</button>
-                    <button class="shift-btn" onclick="setShift(this)">🌙 PM</button>
+                <div class="top-bar-row">
+                    <div class="clock" id="live-clock">🕒 Cargando hora...</div>
+                    <div class="shifts" id="shift-filters">
+                        <button class="shift-btn active" onclick="filterShift('Todos', this)">🌐 Todos</button>
+                        <button class="shift-btn" onclick="filterShift('Turno AM', this)">☀️ AM</button>
+                        <button class="shift-btn" onclick="filterShift('Turno PM', this)">🌙 PM</button>
+                        <button class="shift-btn" onclick="filterShift('Turno Noche', this)">🌌 Noche</button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="search-person" class="search-input" placeholder="🔍 Buscar por Nombre, RUT o Instalación..." oninput="renderizarPantallaControl()">
                 </div>
             </div>
 
             <div class="lock-banner">
-                <span>🔒 PANTALLA DE BLOQUEO • BIOMETRÍA & PIN</span>
-                Toque la huella dactilar para registrar asistencia
+                <span>🔒 PANTALLA DE MARCACIÓN BIOMÉTRICA & PIN</span>
+                Seleccione su registro o toque el icono de la huella para marcar su asistencia
             </div>
 
             <div id="personal-list-container"></div>
@@ -338,30 +552,41 @@
             
             <div class="admin-form" style="border: 2px dashed #ff7e00;">
                 <h3>📂 Carga Masiva desde Excel (.xlsx)</h3>
-                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">
-                    Sube tu archivo de Excel con las columnas ordenadas así:<br>
-                    <b>A: AP PATERNO | B: AP MATERNO | C: NOMBRES | D: RUT | E: TIPO CTTO | F: INSTALACION | G: PAUTA | H: TURNO</b>
+                <p style="font-size: 11px; color: #94a3b8; margin-bottom: 10px; line-height: 1.4;">
+                    Sube tu archivo de Excel con encabezados o columnas ordenadas:<br>
+                    <strong>Apellidos | Nombres | RUT | Instalación | Turno</strong>
                 </p>
-                <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="form-control" style="margin-bottom: 8px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="form-control" style="flex: 1; min-width: 200px;">
+                    <button class="btn-secondary" onclick="descargarPlantillaExcel()">📥 Descargar Plantilla</button>
+                </div>
                 <button class="btn-primary" onclick="procesarArchivoExcel()">Importar desde Excel</button>
             </div>
 
             <div class="admin-form">
                 <h3>➕ Agregar Funcionario Individual</h3>
-                <div class="form-group">
-                    <label>Nombres y Apellidos</label>
-                    <input type="text" id="input-nombre" class="form-control" placeholder="Ej: Juan Pérez Soto">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" id="input-apellidos" class="form-control" placeholder="Ej: Gómez Soto">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombres</label>
+                        <input type="text" id="input-nombres" class="form-control" placeholder="Ej: Juan Pedro">
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>RUT</label>
+                        <input type="text" id="input-rut" class="form-control" placeholder="Ej: 12.345.678-9">
+                    </div>
+                    <div class="form-group">
+                        <label>Instalación</label>
+                        <input type="text" id="input-instalacion" class="form-control" placeholder="Ej: Planta Central">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>RUT</label>
-                    <input type="text" id="input-rut" class="form-control" placeholder="Ej: 12.345.678-9">
-                </div>
-                <div class="form-group">
-                    <label>Instalación</label>
-                    <input type="text" id="input-instalacion" class="form-control" placeholder="Ej: Planta Norte">
-                </div>
-                <div class="form-group">
-                    <label>Pauta / Turno</label>
+                    <label>Turno Asignado</label>
                     <select id="input-turno" class="form-control">
                         <option value="Turno AM">Turno AM</option>
                         <option value="Turno PM">Turno PM</option>
@@ -375,10 +600,35 @@
                 <h3>👥 Personal Registrado (<span id="total-personal">0</span>)</h3>
                 <div id="admin-personal-list"></div>
             </div>
+
+            <div class="admin-form">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">📜 Historial de Marcas de Asistencia</h3>
+                    <div style="display: flex; gap: 6px;">
+                        <button class="btn-secondary" onclick="exportarAsistenciasExcel()">📥 Exportar Marca</button>
+                        <button class="btn-delete" onclick="limpiarHistorialAsistencias()">Limpiar</button>
+                    </div>
+                </div>
+                <div id="asistencias-list-container" class="table-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PIN -->
+    <div id="pin-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title" id="modal-person-name">Registrar Asistencia</div>
+            <div class="modal-subtitle">Ingrese PIN de 4 dígitos para confirmar marca biométrica</div>
+            <input type="password" id="modal-pin-input" class="modal-pin-input" maxlength="6" placeholder="••••" autofocus>
+            <div class="modal-actions">
+                <button class="btn-secondary" style="flex: 1;" onclick="cerrarModalPin()">Cancelar</button>
+                <button class="btn-primary" style="flex: 1;" onclick="confirmarMarcaAsistencia()">Confirmar</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // Actualización de reloj en tiempo real
         function actualizarReloj() {
             const ahora = new Date();
             const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -389,14 +639,23 @@
         setInterval(actualizarReloj, 1000);
         actualizarReloj();
 
+        // Datos iniciales en localStorage o predeterminados
         let personal = JSON.parse(localStorage.getItem('cs_personal')) || [
-            { id: 1, nombre: 'Sebastián Gómez A.', rut: '13.784.602-9', cargo: 'Jefe Seguridad', instalacion: 'Central Principal', pauta: 'Pauta A', turno: 'Turno AM', init: 'SGOMEZ' },
-            { id: 2, nombre: 'Cristóbal Hernández', rut: '15.420.198-4', cargo: 'SSPP', instalacion: 'Sector Bodegas', pauta: 'Pauta B', turno: 'Turno AM', init: 'CHERNANDEZ' },
-            { id: 3, nombre: 'Consuelo Rodríguez', rut: '16.892.341-K', cargo: 'SSPP', instalacion: 'Acceso Principal', pauta: 'Pauta A', turno: 'Turno PM', init: 'CRODRIGUEZ' }
+            { id: 1, apellidos: 'Gómez Arriagada', nombres: 'Sebastián', nombre: 'Sebastián Gómez Arriagada', rut: '13.784.602-9', instalacion: 'Central Principal', turno: 'Turno AM', init: 'SGOMEZ' },
+            { id: 2, apellidos: 'Hernández Pérez', nombres: 'Cristóbal', nombre: 'Cristóbal Hernández Pérez', rut: '15.420.198-4', instalacion: 'Sector Bodegas', turno: 'Turno AM', init: 'CHERNANDEZ' },
+            { id: 3, apellidos: 'Rodríguez Silva', nombres: 'Consuelo', nombre: 'Consuelo Rodríguez Silva', rut: '16.892.341-K', instalacion: 'Acceso Principal', turno: 'Turno PM', init: 'CRODRIGUEZ' }
         ];
 
-        function guardarEnMemoria() {
+        let asistenciasLog = JSON.parse(localStorage.getItem('cs_asistencia_log')) || [];
+        let selectedShiftFilter = 'Todos';
+        let currentSelectingPerson = null;
+
+        function guardarPersonalEnMemoria() {
             localStorage.setItem('cs_personal', JSON.stringify(personal));
+        }
+
+        function guardarAsistenciasEnMemoria() {
+            localStorage.setItem('cs_asistencia_log', JSON.stringify(asistenciasLog));
         }
 
         function switchView(viewName) {
@@ -414,29 +673,56 @@
             }
         }
 
+        function filterShift(turno, button) {
+            selectedShiftFilter = turno;
+            document.querySelectorAll('#shift-filters .shift-btn').forEach(btn => btn.classList.remove('active'));
+            if (button) button.classList.add('active');
+            renderizarPantallaControl();
+        }
+
         function renderizarPantallaControl() {
             const contenedor = document.getElementById('personal-list-container');
+            const searchVal = document.getElementById('search-person') ? document.getElementById('search-person').value.toLowerCase().trim() : '';
             contenedor.innerHTML = '';
 
-            if (personal.length === 0) {
-                contenedor.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:12px; padding:20px;">No hay personal registrado.</p>';
+            let personasFiltradas = personal.filter(p => {
+                const coincideTurno = selectedShiftFilter === 'Todos' || p.turno === selectedShiftFilter;
+                const coincideBusqueda = !searchVal ||
+                    (p.nombre && p.nombre.toLowerCase().includes(searchVal)) ||
+                    (p.rut && p.rut.toLowerCase().includes(searchVal)) ||
+                    (p.instalacion && p.instalacion.toLowerCase().includes(searchVal));
+                return coincideTurno && coincideBusqueda;
+            });
+
+            if (personasFiltradas.length === 0) {
+                contenedor.innerHTML = '<div style="text-align:center; color:#8d99ae; font-size:12px; padding:30px; background:#121826; border-radius:12px; border:1px dashed #1f293d;">No se encontró personal registrado para el criterio seleccionado.</div>';
                 return;
             }
 
-            personal.forEach(p => {
+            personasFiltradas.forEach(p => {
+                const marcasPersona = asistenciasLog.filter(a => a.rut === p.rut);
+                const ultimaMarca = marcasPersona.length > 0 ? marcasPersona[marcasPersona.length - 1] : null;
+
                 const card = document.createElement('div');
                 card.className = 'card';
+
+                let statusBadgeHTML = '';
+                if (ultimaMarca) {
+                    statusBadgeHTML = `<span class="badge-status-present">✅ Marca: ${ultimaMarca.hora}</span>`;
+                }
+
                 card.innerHTML = `
                     <div class="card-info">
                         <div class="card-badges">
-                            <span class="badge-init">${p.init}</span>
+                            <span class="badge-init">${p.init || 'SEC'}</span>
                             <span class="badge-install">📍 ${p.instalacion || 'Sin Instalación'}</span>
+                            <span class="badge-shift">${p.turno || 'AM'}</span>
+                            ${statusBadgeHTML}
                         </div>
                         <div class="card-name">${p.nombre}</div>
-                        <div class="card-rut">RUT: ${p.rut} • <span class="pin-protected">🔑 PIN</span></div>
-                        <div class="card-details">Pauta: ${p.pauta || 'N/A'} | Turno: ${p.turno || 'AM'}</div>
+                        <div class="card-rut">RUT: ${p.rut} • <span class="pin-protected">🔑 PIN Habilitado</span></div>
                     </div>
-                    <div class="fingerprint-btn" onclick="registrarAsistencia('${p.nombre}')">
+                    <div class="fingerprint-btn" onclick="abrirModalPin('${p.id}')">
                         <div class="fingerprint-icon">🟠</div>
                         <div class="fingerprint-text">Tocar</div>
                     </div>
@@ -445,48 +731,145 @@
             });
         }
 
-        function renderizarPanelAdmin() {
-            const contenedor = document.getElementById('admin-personal-list');
-            document.getElementById('total-personal').innerText = personal.length;
-            contenedor.innerHTML = '';
+        function abrirModalPin(personId) {
+            const persona = personal.find(p => String(p.id) === String(personId));
+            if (!persona) return;
+            currentSelectingPerson = persona;
+            document.getElementById('modal-person-name').innerText = persona.nombre;
+            document.getElementById('modal-pin-input').value = '';
+            document.getElementById('pin-modal').classList.add('active');
+            setTimeout(() => document.getElementById('modal-pin-input').focus(), 100);
+        }
 
-            if (personal.length === 0) {
-                contenedor.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:11px;">Sin personal.</p>';
+        function cerrarModalPin() {
+            document.getElementById('pin-modal').classList.remove('active');
+            currentSelectingPerson = null;
+        }
+
+        function confirmarMarcaAsistencia() {
+            if (!currentSelectingPerson) return;
+            const pinVal = document.getElementById('modal-pin-input').value.trim();
+            if (!pinVal || pinVal.length < 4) {
+                alert('Por favor, ingrese su PIN de al menos 4 dígitos.');
                 return;
             }
 
-            personal.forEach((p, index) => {
-                const item = document.createElement('div');
-                item.className = 'admin-list-item';
-                item.innerHTML = `
-                    <div>
-                        <strong>${p.nombre}</strong><br>
-                        <span style="color:#94a3b8; font-size:10px;">RUT: ${p.rut} | 📍 ${p.instalacion} (${p.turno})</span>
-                    </div>
-                    <button class="btn-delete" onclick="eliminarPersona(${index})">Eliminar</button>
+            const ahora = new Date();
+            const registro = {
+                id: Date.now(),
+                nombre: currentSelectingPerson.nombre,
+                rut: currentSelectingPerson.rut,
+                instalacion: currentSelectingPerson.instalacion,
+                turno: currentSelectingPerson.turno,
+                fecha: ahora.toLocaleDateString('es-CL'),
+                hora: ahora.toLocaleTimeString('es-CL'),
+                timestamp: ahora.toISOString()
+            };
+
+            asistenciasLog.push(registro);
+            guardarAsistenciasEnMemoria();
+
+            alert(`¡Marca de asistencia exitosa!\n\nFuncionario: ${registro.nombre}\nRUT: ${registro.rut}\nHora: ${registro.hora}\nInstalación: ${registro.instalacion}`);
+            cerrarModalPin();
+            renderizarPantallaControl();
+        }
+
+        // Permitir presionar Enter en el input del modal PIN
+        document.getElementById('modal-pin-input').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                confirmarMarcaAsistencia();
+            }
+        });
+
+        function renderizarPanelAdmin() {
+            // Lista de personal
+            const contenedorList = document.getElementById('admin-personal-list');
+            document.getElementById('total-personal').innerText = personal.length;
+            contenedorList.innerHTML = '';
+
+            if (personal.length === 0) {
+                contenedorList.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:11px; padding:10px;">Sin personal registrado.</p>';
+            } else {
+                personal.forEach((p, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'admin-list-item';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${p.nombre}</strong><br>
+                            <span style="color:#94a3b8; font-size:11px;">RUT: ${p.rut} | 📍 ${p.instalacion} (${p.turno})</span>
+                        </div>
+                        <button class="btn-delete" onclick="eliminarPersona(${index})">Eliminar</button>
+                    `;
+                    contenedorList.appendChild(item);
+                });
+            }
+
+            // Historial de Asistencias
+            const contenedorAsistencias = document.getElementById('asistencias-list-container');
+            if (asistenciasLog.length === 0) {
+                contenedorAsistencias.innerHTML = '<p style="text-align:center; color:#8d99ae; font-size:11px; padding:15px;">No hay registros de asistencia en el historial.</p>';
+            } else {
+                let html = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Funcionario</th>
+                                <th>RUT</th>
+                                <th>Instalación</th>
+                                <th>Turno</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
-                contenedor.appendChild(item);
-            });
+                asistenciasLog.slice().reverse().forEach(log => {
+                    html += `
+                        <tr>
+                            <td>${log.fecha}</td>
+                            <td style="color:#ff7e00; font-weight:bold;">${log.hora}</td>
+                            <td>${log.nombre}</td>
+                            <td>${log.rut}</td>
+                            <td>${log.instalacion}</td>
+                            <td>${log.turno}</td>
+                        </tr>
+                    `;
+                });
+                html += `</tbody></table>`;
+                contenedorAsistencias.innerHTML = html;
+            }
         }
 
         function agregarPersonaIndividual() {
-            const nombre = document.getElementById('input-nombre').value.trim();
+            const apellidos = document.getElementById('input-apellidos').value.trim();
+            const nombres = document.getElementById('input-nombres').value.trim();
             const rut = document.getElementById('input-rut').value.trim();
             const instalacion = document.getElementById('input-instalacion').value.trim() || 'General';
             const turno = document.getElementById('input-turno').value;
 
-            if (!nombre || !rut) {
-                alert('Por favor, complete al menos el nombre y el RUT.');
+            if ((!apellidos && !nombres) || !rut) {
+                alert('Por favor, complete Apellidos/Nombres y el RUT.');
                 return;
             }
 
-            const partes = nombre.toUpperCase().split(' ');
-            const init = partes.length > 1 ? partes[0][0] + partes[1] : partes[0];
+            const nombreCompleto = `${nombres} ${apellidos}`.trim();
+            const init = ((apellidos ? apellidos[0] : '') + (nombres ? nombres[0] : '')).toUpperCase();
 
-            personal.push({ id: Date.now(), nombre, rut, cargo: 'Guardia/SSPP', instalacion, pauta: 'Estándar', turno, init });
-            guardarEnMemoria();
+            personal.push({
+                id: Date.now(),
+                apellidos,
+                nombres,
+                nombre: nombreCompleto,
+                rut,
+                instalacion,
+                turno,
+                init: init || 'SEC'
+            });
 
-            document.getElementById('input-nombre').value = '';
+            guardarPersonalEnMemoria();
+
+            document.getElementById('input-apellidos').value = '';
+            document.getElementById('input-nombres').value = '';
             document.getElementById('input-rut').value = '';
             document.getElementById('input-instalacion').value = '';
 
@@ -495,17 +878,25 @@
         }
 
         function eliminarPersona(index) {
-            if (confirm('¿Está seguro de eliminar a este funcionario?')) {
+            if (confirm('¿Está seguro de eliminar a este funcionario del sistema?')) {
                 personal.splice(index, 1);
-                guardarEnMemoria();
+                guardarPersonalEnMemoria();
                 renderizarPanelAdmin();
             }
+        }
+
+        function normalizarTexto(txt) {
+            return String(txt || '')
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .trim();
         }
 
         function procesarArchivoExcel() {
             const fileInput = document.getElementById('excel-file-input');
             if (fileInput.files.length === 0) {
-                alert('Por favor, seleccione un archivo de Excel (.xlsx) primero.');
+                alert('Por favor, seleccione un archivo de Excel (.xlsx o .xls) primero.');
                 return;
             }
 
@@ -513,68 +904,184 @@
             const reader = new FileReader();
 
             reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                
-                let agregados = 0;
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (!row || row.length === 0) continue;
-
-                    const apPaterno = row[0] ? String(row[0]).trim() : '';
-                    const apMaterno = row[1] ? String(row[1]).trim() : '';
-                    const nombres = row[2] ? String(row[2]).trim() : '';
-                    const rut = row[3] ? String(row[3]).trim() : '';
-                    const tipoCtto = row[4] ? String(row[4]).trim() : 'Indefinido';
-                    const instalacion = row[5] ? String(row[5]).trim() : 'Principal';
-                    const pauta = row[6] ? String(row[6]).trim() : 'Estándar';
-                    const turno = row[7] ? String(row[7]).trim() : 'Turno AM';
-
-                    if (nombres && rut) {
-                        const nombreCompleto = `${nombres} ${apPaterno} ${apMaterno}`.trim();
-                        const init = (apPaterno ? apPaterno[0] : '') + (nombres ? nombres.split(' ')[0] : '');
-
-                        personal.push({
-                            id: Date.now() + i,
-                            nombre: nombreCompleto,
-                            rut: rut,
-                            cargo: tipoCtto,
-                            instalacion: instalacion,
-                            pauta: pauta,
-                            turno: turno,
-                            init: init.toUpperCase()
-                        });
-                        agregados++;
+                    if (rows.length === 0) {
+                        alert('El archivo Excel está vacío.');
+                        return;
                     }
-                }
 
-                guardarEnMemoria();
-                renderizarPanelAdmin();
-                alert(`¡Importación exitosa! Se han cargado ${agregados} funcionarios.`);
+                    // Detección de encabezados
+                    let headerIndex = -1;
+                    let colApellidos = -1, colNombres = -1, colRut = -1, colInstalacion = -1, colTurno = -1;
+
+                    for (let i = 0; i < Math.min(5, rows.length); i++) {
+                        const row = rows[i] || [];
+                        const normalizedRow = row.map(cell => normalizarTexto(cell));
+
+                        const foundRut = normalizedRow.findIndex(cell => cell.includes('rut') || cell.includes('run'));
+                        const foundName = normalizedRow.findIndex(cell => cell.includes('nombre'));
+                        const foundAp = normalizedRow.findIndex(cell => cell.includes('apellido') || cell.includes('paterno'));
+
+                        if (foundRut !== -1 || foundName !== -1 || foundAp !== -1) {
+                            headerIndex = i;
+                            colRut = foundRut;
+                            colNombres = foundName;
+                            colApellidos = foundAp;
+                            colInstalacion = normalizedRow.findIndex(cell => cell.includes('instalacion') || cell.includes('planta') || cell.includes('sitio'));
+                            colTurno = normalizedRow.findIndex(cell => cell.includes('turno') || cell.includes('pauta') || cell.includes('horario'));
+                            break;
+                        }
+                    }
+
+                    let startRow = 0;
+                    if (headerIndex !== -1) {
+                        startRow = headerIndex + 1;
+                    }
+
+                    let agregados = 0;
+
+                    for (let i = startRow; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (!row || row.length === 0) continue;
+
+                        let apellidos = '', nombres = '', rut = '', instalacion = '', turno = '';
+
+                        if (headerIndex !== -1) {
+                            // Basado en encabezados detectados
+                            apellidos = colApellidos !== -1 && row[colApellidos] ? String(row[colApellidos]).trim() : '';
+                            nombres = colNombres !== -1 && row[colNombres] ? String(row[colNombres]).trim() : '';
+                            rut = colRut !== -1 && row[colRut] ? String(row[colRut]).trim() : '';
+                            instalacion = colInstalacion !== -1 && row[colInstalacion] ? String(row[colInstalacion]).trim() : 'Central';
+                            turno = colTurno !== -1 && row[colTurno] ? String(row[colTurno]).trim() : 'Turno AM';
+                        } else {
+                            // Sin encabezados reconocidos: verificar por cantidad de columnas
+                            if (row.length >= 8) {
+                                // Formato de 8 columnas: AP PATERNO | AP MATERNO | NOMBRES | RUT | TIPO CTTO | INSTALACION | PAUTA | TURNO
+                                const apP = row[0] ? String(row[0]).trim() : '';
+                                const apM = row[1] ? String(row[1]).trim() : '';
+                                apellidos = `${apP} ${apM}`.trim();
+                                nombres = row[2] ? String(row[2]).trim() : '';
+                                rut = row[3] ? String(row[3]).trim() : '';
+                                instalacion = row[5] ? String(row[5]).trim() : 'Central';
+                                turno = row[7] ? String(row[7]).trim() : 'Turno AM';
+                            } else {
+                                // Formato estándar de 5 columnas: Apellidos | Nombres | RUT | Instalación | Turno
+                                apellidos = row[0] ? String(row[0]).trim() : '';
+                                nombres = row[1] ? String(row[1]).trim() : '';
+                                rut = row[2] ? String(row[2]).trim() : '';
+                                instalacion = row[3] ? String(row[3]).trim() : 'Central';
+                                turno = row[4] ? String(row[4]).trim() : 'Turno AM';
+                            }
+                        }
+
+                        // Normalizar formato de turno si viene como "AM", "PM", "Noche"
+                        if (turno.toUpperCase() === 'AM') turno = 'Turno AM';
+                        else if (turno.toUpperCase() === 'PM') turno = 'Turno PM';
+                        else if (turno.toUpperCase() === 'NOCHE') turno = 'Turno Noche';
+
+                        if ((apellidos || nombres) && rut) {
+                            const nombreCompleto = `${nombres} ${apellidos}`.trim();
+                            const init = ((apellidos ? apellidos[0] : '') + (nombres ? nombres[0] : '')).toUpperCase();
+
+                            personal.push({
+                                id: Date.now() + i + Math.random(),
+                                apellidos,
+                                nombres,
+                                nombre: nombreCompleto,
+                                rut,
+                                instalacion: instalacion || 'Central',
+                                turno: turno || 'Turno AM',
+                                init: init || 'SEC'
+                            });
+                            agregados++;
+                        }
+                    }
+
+                    if (agregados > 0) {
+                        guardarPersonalEnMemoria();
+                        renderizarPanelAdmin();
+                        alert(`¡Importación exitosa! Se han cargado ${agregados} funcionarios desde Excel.`);
+                    } else {
+                        alert('No se encontraron registros válidos para importar en el archivo. Verifique las columnas.');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Error al leer el archivo Excel. Asegúrese de que sea un formato válido (.xlsx).');
+                }
             };
 
             reader.readAsArrayBuffer(file);
         }
 
-        function registrarAsistencia(nombre) {
-            const pin = prompt(`[CONTROL SECURITY]\nIngrese PIN de 4 dígitos para ${nombre}:`);
-            if (pin && pin.length >= 4) {
-                alert(`¡Asistencia registrada con éxito!\nFuncionario: ${nombre}\nHora: ${new Date().toLocaleTimeString('es-CL')}`);
-            } else if (pin !== null) {
-                alert('PIN inválido.');
+        function descargarPlantillaExcel() {
+            const dataPlantilla = [
+                {
+                    "Apellidos": "Pérez Soto",
+                    "Nombres": "Juan Carlos",
+                    "RUT": "18.345.678-9",
+                    "Instalación": "Planta Norte",
+                    "Turno": "Turno AM"
+                },
+                {
+                    "Apellidos": "González Tapia",
+                    "Nombres": "María José",
+                    "RUT": "17.123.456-K",
+                    "Instalación": "Sucursal Centro",
+                    "Turno": "Turno PM"
+                },
+                {
+                    "Apellidos": "Vargas Silva",
+                    "Nombres": "Roberto",
+                    "RUT": "19.876.543-2",
+                    "Instalación": "Bodega Principal",
+                    "Turno": "Turno Noche"
+                }
+            ];
+
+            const worksheet = XLSX.utils.json_to_sheet(dataPlantilla);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla_Personal");
+            XLSX.writeFile(workbook, "Plantilla_Control_Security.xlsx");
+        }
+
+        function exportarAsistenciasExcel() {
+            if (asistenciasLog.length === 0) {
+                alert('No hay registros de asistencia para exportar.');
+                return;
+            }
+
+            const dataExport = asistenciasLog.map(log => ({
+                "Fecha": log.fecha,
+                "Hora": log.hora,
+                "Funcionario": log.nombre,
+                "RUT": log.rut,
+                "Instalación": log.instalacion,
+                "Turno": log.turno
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Historial_Asistencia");
+            XLSX.writeFile(workbook, `Reporte_Asistencia_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        function limpiarHistorialAsistencias() {
+            if (confirm('¿Desea borrar todo el historial de marcas de asistencia?')) {
+                asistenciasLog = [];
+                guardarAsistenciasEnMemoria();
+                renderizarPanelAdmin();
+                renderizarPantallaControl();
             }
         }
 
+        // Renderizado inicial
         renderizarPantallaControl();
-
-        function setShift(button) {
-            document.querySelectorAll('.shift-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-        }
     </script>
 </body>
 </html>
